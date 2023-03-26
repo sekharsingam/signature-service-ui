@@ -48,7 +48,7 @@ export default function UploadDocumentPage() {
       .catch((err) => console.log(err));
   };
   return (
-    <>
+    <div style={{ maxWidth: 1300, margin: "0 auto" }}>
       <div>
         <Typography variant="h5">Upload Document</Typography>
       </div>
@@ -140,6 +140,6 @@ export default function UploadDocumentPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

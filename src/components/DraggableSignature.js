@@ -8,6 +8,7 @@ export default function DraggableSignature({ url, onEnd, onSet, onCancel }) {
       position: "absolute",
       zIndex: 100000,
       border: `2px solid ${primary45}`,
+      cursor: "all-scroll",
     },
     controls: {
       position: "absolute",

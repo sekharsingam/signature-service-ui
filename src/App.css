@@ -1,14 +1,14 @@
 .container {
-  max-width: 1264px;
-  width: 100%;
-  background: none;
-  /* display: flex;
-  justify-content: center; */
+  /* max-width: 1264px; */
+  /* width: 100%; */
+  /* background: none; */
+  /* display: flex; */
+  /* justify-content: center; */
   padding: 20px;
-  margin: 0 auto;
-  position: relative;
-  flex: 1 0 auto;
-  text-align: left;
+  /* margin: 0 auto; */
+  /* position: relative; */
+  /* flex: 1 0 auto; */
+  /* text-align: left; */
 }
 
 .content {
