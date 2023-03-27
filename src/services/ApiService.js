@@ -10,9 +10,9 @@ export const generateSignature = async (name) => {
   return res;
 };
 
-export const getPdfFile = async () => {
+export const getPdfFile = async (accessCode) => {
   const res = await axios.get(
-    "/api/v1/signature/download?accessCode=06161790-5ea6-4457-89d9-b2ec7b0d059c"
+    `/api/v1/signature/download?accessCode=${accessCode}`
   );
   return res;
 };

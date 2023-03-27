@@ -1,6 +1,8 @@
 import { PDFDocument } from "pdf-lib";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { useNavigate, useParams } from "react-router-dom";
+import OverlayLoader from "src/common/OverlayLoader";
 import DraggableSignature from "src/components/DraggableSignature";
 import PagingControl from "src/components/PagingControl";
 import SignatureDialog from "src/components/SignatureDialog";
@@ -52,18 +54,24 @@ function DocumentSignaturePage() {
   const [totalPages, setTotalPages] = useState(0);
   const [pageDetails, setPageDetails] = useState(null);
 
+  const [showLoading, setLoading] = useState(false);
   const documentContainerRef = useRef(null);
   const documentRef = useRef(null);
 
+  const navigate = useNavigate();
+  const { accessCode } = useParams();
+
   useEffect(() => {
     downloadPdfFile();
-  }, []);
+  }, [accessCode]);
 
   const downloadPdfFile = () => {
-    getPdfFile().then(async (res) => {
+    setLoading(true);
+    getPdfFile(accessCode).then(async (res) => {
       const blob = new Blob([res.data], { type: "application/pdf" });
       const URL = await blobToURL(blob);
       setPdf(URL);
+      setLoading(false);
     });
   };
 
@@ -81,7 +89,12 @@ function DocumentSignaturePage() {
     const formData = new FormData();
     formData.append("accessCode", "06161790-5ea6-4457-89d9-b2ec7b0d059c");
     formData.append("file", file);
-    uploadSignedPdfFile(formData).then((res) => {});
+
+    setLoading(true);
+    uploadSignedPdfFile(formData).then((res) => {
+      setLoading(false);
+      navigate(`/document/signature/${accessCode}/done`);
+    });
   };
 
   const handleCancelSignatureDialog = () => {
@@ -95,6 +108,7 @@ function DocumentSignaturePage() {
 
   return (
     <div>
+      {showLoading && <OverlayLoader show={true} />}
       <div style={styles.container}>
         {/* {signatureDialogVisible ? ( */}
         <SignatureDialog
@@ -280,28 +294,30 @@ function DocumentSignaturePage() {
           </div>
         ) : null}
       </div>
-      <div style={styles.footer}>
-        <button
-          className="btn btn-primary btn-sm"
-          //   marginRight={8}
-          style={{ padding: "0, 20px", display: "block" }}
-          title={"Add signature"}
-          onClick={() => setOpenSignatureDialog(true)}
-        >
-          Add Signature
-        </button>
-        {pdf ? (
+      {pdf ? (
+        <div style={styles.footer}>
           <button
             className="btn btn-primary btn-sm"
+            //   marginRight={8}
             style={{ padding: "0, 20px", display: "block" }}
-            inverted={true}
-            title={"Download"}
-            onClick={submitSignedDocument}
+            title={"Add signature"}
+            onClick={() => setOpenSignatureDialog(true)}
           >
-            Submit Signed document
+            Add Signature
           </button>
-        ) : null}
-      </div>
+          {pdf ? (
+            <button
+              className="btn btn-primary btn-sm"
+              style={{ padding: "0, 20px", display: "block" }}
+              inverted={true}
+              title={"Download"}
+              onClick={submitSignedDocument}
+            >
+              Submit Signed document
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

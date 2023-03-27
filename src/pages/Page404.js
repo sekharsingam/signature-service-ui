@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 const StyledContent = styled("div")(() => ({
   maxWidth: 480,
   margin: "auto",
-  minHeight: "100vh",
+  minHeight: "calc(100vh - 100px)",
   display: "flex",
   justifyContent: "center",
   flexDirection: "column",
