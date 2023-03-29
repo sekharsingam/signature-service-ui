@@ -1,11 +1,21 @@
 import { useRoutes } from "react-router-dom";
+import Dashboard from "./pages/dashboard/Dashboard";
 import DocumentSignaturePage from "./pages/DocumentSignaturePage";
 import DocumentSignatureSuccess from "./pages/DocumentSignatureSuccess";
+import LoginPage from "./pages/LoginPage";
 import Page404 from "./pages/Page404";
-import UploadDocumentPage from "./pages/UploadDocumentPage";
+import UploadDocumentPage from "./pages/uploadDocument/UploadDocumentPage";
 
 export default function Router() {
   const routes = useRoutes([
+    {
+      path: "login",
+      element: <LoginPage />,
+    },
+    {
+      path: "/dashboard",
+      element: <Dashboard />,
+    },
     {
       path: "/document/upload",
       element: <UploadDocumentPage />,
