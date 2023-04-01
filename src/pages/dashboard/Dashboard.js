@@ -1,15 +1,20 @@
 import styled from "@emotion/styled";
-import { IconButton, MenuItem, Typography } from "@mui/material";
-import { useState } from "react";
-import ActionPopover from "src/common/ActionPopover";
-import TableList from "src/common/TableList";
+import { Chip, IconButton, MenuItem, Typography } from "@mui/material";
+import moment from "moment";
+import { useEffect, useState } from "react";
 import {
   FaCheckCircle,
   FaEllipsisV,
   FaFileDownload,
   FaTimesCircle,
 } from "react-icons/fa";
-import { CheckCircle } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import ActionPopover from "src/common/ActionPopover";
+import TableList from "src/common/TableList";
+import {
+  getSignedDocumentsList,
+  setStatusToDocumentListItem,
+} from "src/services/ApiService";
 
 const StyledContent = styled("div")(() => ({
   boxShadow: "0 0 8px rgb(0 0 0 / 10%)",
@@ -19,28 +24,86 @@ const StyledContent = styled("div")(() => ({
 }));
 
 function Dashboard() {
+  const [signedDocumentsList, setSignedDocumentList] = useState([]);
   const [openPopover, setPopoverOpen] = useState(null);
-  const [selectedOrderForAction, setSelectedOrderForAction] = useState(null);
+  const [selectedItemForAction, setSelectedItemForAction] = useState(null);
+  const navigate = useNavigate();
 
-  const handleOpenMenu = (event, order) => {
+  const handleOpenMenu = (event, item) => {
     setPopoverOpen(event.currentTarget);
-    setSelectedOrderForAction(order);
+    setSelectedItemForAction(item);
   };
 
   const handlePopoverClose = () => {
     setPopoverOpen(null);
-    setSelectedOrderForAction(null);
+    setSelectedItemForAction(null);
+  };
+
+  useEffect(() => {
+    getAllSignatureFileList();
+  }, []);
+
+  const getAllSignatureFileList = () => {
+    getSignedDocumentsList().then((res) => {
+      setSignedDocumentList(res.data);
+    });
+  };
+
+  const handleListAction = (status) => {
+    setStatusToDocumentListItem(selectedItemForAction.accessCode, status).then(
+      (res) => {
+        handlePopoverClose();
+        getAllSignatureFileList();
+      }
+    );
+  };
+
+  const navigateToUploadDocumentPage = () => {
+    navigate("/document/upload");
   };
 
   const TABLE_COLUMNS = [
     { id: "name", label: "Name" },
     { id: "email", label: "Email" },
     {
+      id: "createdAt",
+      label: "Created At",
+      dataFormat: (cell) => {
+        const stillUtc = moment.utc(cell).toDate();
+        return (
+          <span>
+            {moment(stillUtc).local().format("YYYY-MM-DD hh:mm:ss A")}
+          </span>
+        );
+      },
+    },
+    {
       id: "file",
       label: "File",
       dataFormat: (cell) => (
         <FaFileDownload style={{ marginLeft: 5, cursor: "pointer" }} />
       ),
+    },
+    {
+      id: "status",
+      label: "Status",
+      dataFormat: (cell) => {
+        return cell === "APPROVED" ? (
+          <Chip
+            label={cell}
+            icon={<FaCheckCircle />}
+            color="success"
+            size="small"
+          />
+        ) : (
+          <Chip
+            label={cell}
+            icon={<FaTimesCircle />}
+            color="error"
+            size="small"
+          />
+        );
+      },
     },
     {
       id: "",
@@ -61,20 +124,31 @@ function Dashboard() {
     <div style={{ maxWidth: 1300, margin: "0 auto" }}>
       <div>
         <Typography variant="h5">Dashboard</Typography>
+
+        <div style={{ display: "flex", justifyContent: "right" }}>
+          <button
+            className="btn btn-primary btn-sm"
+            style={{ padding: "0, 20px", display: "block" }}
+            title={"Upload Document"}
+            onClick={() => navigateToUploadDocumentPage()}
+          >
+            Upload New Document
+          </button>
+        </div>
         <StyledContent>
           <TableList
             size={"medium"}
-            data={[{ id: "1", name: "sekhar", email: "test@gmail.com" }]}
+            data={signedDocumentsList}
             columns={TABLE_COLUMNS}
             noDataText={"No data"}
           />
           <ActionPopover open={openPopover} onClose={handlePopoverClose}>
             <>
-              <MenuItem>
+              <MenuItem onClick={() => handleListAction("APPROVED")}>
                 <FaCheckCircle style={{ marginRight: 5, color: "green" }} />
                 Approve
               </MenuItem>
-              <MenuItem>
+              <MenuItem onClick={() => handleListAction("REJECTED")}>
                 <FaTimesCircle style={{ marginRight: 5, color: "red" }} />
                 Reject
               </MenuItem>

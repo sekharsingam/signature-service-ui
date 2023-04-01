@@ -34,8 +34,9 @@ function DocumentSignaturePage() {
     },
     footer: {
       position: "fixed",
+      left: 0,
       bottom: 0,
-      height: 80,
+      height: 70,
       width: "100%",
       background: "#fff",
       borderTop: "1px solid #ccc",
@@ -63,7 +64,7 @@ function DocumentSignaturePage() {
 
   useEffect(() => {
     downloadPdfFile();
-  }, [accessCode]);
+  }, []);
 
   const downloadPdfFile = () => {
     setLoading(true);
@@ -87,7 +88,7 @@ function DocumentSignaturePage() {
     });
     console.log(file);
     const formData = new FormData();
-    formData.append("accessCode", "06161790-5ea6-4457-89d9-b2ec7b0d059c");
+    formData.append("accessCode", accessCode);
     formData.append("file", file);
 
     setLoading(true);
@@ -107,50 +108,28 @@ function DocumentSignaturePage() {
   };
 
   return (
-    <div>
+    <>
       {showLoading && <OverlayLoader show={true} />}
       <div style={styles.container}>
-        {/* {signatureDialogVisible ? ( */}
         <SignatureDialog
           open={openSignatureDialog}
           title={"Reason for Reject the Customer"}
           onCancel={handleCancelSignatureDialog}
           onConfirm={handleConfirmSignatureDialog}
         />
-        {/* ) : null} */}
 
         {pdf ? (
           <div>
             <div style={styles.controls}>
-              {/* <button
-                className="btn btn-primary btn-sm"
-                //   marginRight={8}
-                style={{ width: 200, display: "block" }}
-                title={"Add signature"}
-                onClick={() => setOpenSignatureDialog(true)}
-              >
-                Add Signature
-              </button> */}
               <PagingControl
                 pageNum={pageNum}
                 setPageNum={setPageNum}
                 totalPages={totalPages}
               />
-              {/* {pdf ? (
-                <button
-                  className="btn btn-primary btn-sm"
-                  style={{ width: 200, display: "block" }}
-                  inverted={true}
-                  title={"Download"}
-                  onClick={submitSignedDocument}
-                >
-                  Download
-                </button>
-              ) : null} */}
             </div>
             <div
               ref={documentContainerRef}
-              style={{ height: "calc(100vh - 120px)", overflow: "auto" }}
+              style={{ height: "calc(100vh - 150px)", overflow: "auto" }}
             >
               <div ref={documentRef} style={styles.documentBlock}>
                 {/* {textInputVisible ? (
@@ -280,6 +259,24 @@ function DocumentSignaturePage() {
                     setTotalPages(data.numPages);
                   }}
                 >
+                  {/* {[...Array(totalPages)].map((page, ind) => {
+                    return (
+                      <>
+                        <Page
+                          pageNumber={ind + 1}
+                          width={800}
+                          height={1200}
+                          onLoadSuccess={(data) => {
+                            console.log(data)
+                            setPageDetails(data);
+                          }}
+                        />
+                        <div style={{ margin: 5, textAlign: "right" }}>
+                          Sekhar
+                        </div>
+                      </>
+                    );
+                  })} */}
                   <Page
                     pageNumber={pageNum + 1}
                     width={800}
@@ -318,7 +315,7 @@ function DocumentSignaturePage() {
           ) : null}
         </div>
       ) : null}
-    </div>
+    </>
   );
 }
 
