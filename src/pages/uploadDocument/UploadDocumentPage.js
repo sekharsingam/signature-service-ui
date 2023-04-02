@@ -1,11 +1,14 @@
-import { TextField, Typography } from "@mui/material";
+import { Breadcrumbs, TextField, Typography } from "@mui/material";
 import { convertToRaw, EditorState } from "draft-js";
 import draftjsToHtml from "draftjs-to-html";
 import { useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { Link, useNavigate } from "react-router-dom";
 import { uploadDocument } from "src/services/ApiService";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import "./UploadDocumentPage.css";
+import OverlayLoader from "src/common/OverlayLoader";
 
 export default function UploadDocumentPage() {
   const [name, setName] = useState();
@@ -14,6 +17,9 @@ export default function UploadDocumentPage() {
   const [subject, setSubject] = useState();
 
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+  const [showLoading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -31,7 +37,7 @@ export default function UploadDocumentPage() {
     setFile(e.target.files[0]);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (haveToSign) => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("email", email);
@@ -40,18 +46,40 @@ export default function UploadDocumentPage() {
       draftjsToHtml(convertToRaw(editorState.getCurrentContent()))
     );
     formData.append("file", file);
-
+    setLoading(true);
     uploadDocument(formData)
       .then((res) => {
-        console.log(res);
+        setLoading(false);
+        if (haveToSign) {
+          navigate(`/document/signature/${res.data.accessCode}`);
+        }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
   };
+
   return (
     <div style={{ maxWidth: 1300, margin: "0 auto" }}>
-      <div>
-        <Typography variant="h5">Upload Document</Typography>
-      </div>
+      {showLoading && <OverlayLoader show={true} />}
+      {/* <div>
+        <Typography variant="h6">Upload Document</Typography>
+      </div> */}
+      <Breadcrumbs
+        separator={<NavigateNextIcon fontSize="small" />}
+        aria-label="breadcrumb"
+      >
+        <Link
+          to="/suchi/home"
+          color="inherit"
+          underline="hover"
+          style={{ textDecoration: "none" }}
+        >
+          <Typography variant="label">Home</Typography>
+        </Link>
+        <Typography variant="h6">Upload Document</Typography>
+      </Breadcrumbs>
       <div
         style={{
           display: "flex",
@@ -132,13 +160,15 @@ export default function UploadDocumentPage() {
               ></TextField>
             </div>
           </div>
-
-          <div style={{ textAlign: "center" }}>
-            <button className="btn btn-primary" onClick={handleSubmit}>
-              Submit
-            </button>
-          </div>
         </div>
+      </div>
+      <div style={{ textAlign: "right" }}>
+        <button className="btn btn-primary" onClick={handleSubmit}>
+          Submit
+        </button>
+        <button className="btn btn-primary" onClick={() => handleSubmit(true)}>
+          Sign and Submit
+        </button>
       </div>
     </div>
   );

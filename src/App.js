@@ -3,8 +3,10 @@ import Router from "./router";
 
 export default function App() {
   return (
-    <div className="container">
-      <Router />
-    </div>
+    <>
+      <div className="container">
+        <Router />
+      </div>
+    </>
   );
 }

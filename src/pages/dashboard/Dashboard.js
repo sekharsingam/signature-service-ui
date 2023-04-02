@@ -6,10 +6,12 @@ import {
   FaCheckCircle,
   FaEllipsisV,
   FaFileDownload,
+  FaSyncAlt,
   FaTimesCircle,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ActionPopover from "src/common/ActionPopover";
+import OverlayLoader from "src/common/OverlayLoader";
 import TableList from "src/common/TableList";
 import {
   getSignedDocumentsList,
@@ -27,6 +29,8 @@ function Dashboard() {
   const [signedDocumentsList, setSignedDocumentList] = useState([]);
   const [openPopover, setPopoverOpen] = useState(null);
   const [selectedItemForAction, setSelectedItemForAction] = useState(null);
+  const [showLoading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleOpenMenu = (event, item) => {
@@ -44,9 +48,13 @@ function Dashboard() {
   }, []);
 
   const getAllSignatureFileList = () => {
-    getSignedDocumentsList().then((res) => {
-      setSignedDocumentList(res.data);
-    });
+    setLoading(true);
+    getSignedDocumentsList()
+      .then((res) => {
+        setSignedDocumentList(res.data);
+        setLoading(false);
+      })
+      .catch((e) => setLoading(false));
   };
 
   const handleListAction = (status) => {
@@ -59,7 +67,7 @@ function Dashboard() {
   };
 
   const navigateToUploadDocumentPage = () => {
-    navigate("/document/upload");
+    navigate("/suchi/document/upload");
   };
 
   const TABLE_COLUMNS = [
@@ -122,18 +130,36 @@ function Dashboard() {
 
   return (
     <div style={{ maxWidth: 1300, margin: "0 auto" }}>
+      {showLoading && <OverlayLoader show={true} />}
       <div>
-        <Typography variant="h5">Dashboard</Typography>
-
-        <div style={{ display: "flex", justifyContent: "right" }}>
-          <button
-            className="btn btn-primary btn-sm"
-            style={{ padding: "0, 20px", display: "block" }}
-            title={"Upload Document"}
-            onClick={() => navigateToUploadDocumentPage()}
-          >
-            Upload New Document
-          </button>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            margin: "0 18px",
+          }}
+        >
+          <Typography variant="h5">Dashboard</Typography>
+          <div style={{ display: "flex" }}>
+            <button
+              className="btn btn-primary btn-sm"
+              style={{ padding: "0, 20px", display: "block" }}
+              title={"Upload Document"}
+              onClick={() => navigateToUploadDocumentPage()}
+            >
+              Upload New Document
+            </button>
+            <button
+              className="btn btn-primary btn-sm"
+              style={{ padding: "0, 20px", display: "block" }}
+              title={"Upload Document"}
+              onClick={() => getAllSignatureFileList()}
+            >
+              <FaSyncAlt style={{ marginRight: 5 }} />
+              Refresh
+            </button>
+          </div>
         </div>
         <StyledContent>
           <TableList

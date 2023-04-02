@@ -21,8 +21,8 @@ const StyledSection = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
-//   boxShadow: theme.customShadows.card,
-//   backgroundColor: '#fff',
+  //   boxShadow: theme.customShadows.card,
+  //   backgroundColor: '#fff',
 }));
 
 const StyledContent = styled("div")(({ theme }) => ({
@@ -32,7 +32,7 @@ const StyledContent = styled("div")(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   flexDirection: "column",
-//   padding: theme.spacing(12, 0),
+  //   padding: theme.spacing(12, 0),
 }));
 
 // ----------------------------------------------------------------------
@@ -44,7 +44,7 @@ export default function LoginPage() {
 
   const onLogin = (data) => {
     // dispatch(login(data));
-    navigate('/dashboard')
+    navigate("/suchi");
   };
 
   //   if (isLoggedIn) {

@@ -2,6 +2,7 @@ import { Container, Typography } from "@mui/material";
 // @mui
 import { styled } from "@mui/material/styles";
 import { FaCheckCircle } from "react-icons/fa";
+import { Link } from "react-router-dom";
 const StyledContent = styled("div")(() => ({
   maxWidth: 480,
   margin: "auto",
@@ -28,6 +29,18 @@ export default function DocumentSignatureSuccess() {
           <Typography sx={{ color: "text.secondary" }}>
             You have signed the document and submitted successfully
           </Typography>
+
+          <button
+            className="btn btn-primary btn-sm"
+            style={{ marginTop: "3rem" }}
+          >
+            <Link
+              to="/suchi/home"
+              style={{ color: "#fff", textDecoration: "none" }}
+            >
+              Back to Home
+            </Link>
+          </button>
         </StyledContent>
       </Container>
     </>

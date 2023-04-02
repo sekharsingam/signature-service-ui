@@ -2,10 +2,6 @@ import { BigButton } from "./BigButton";
 
 export default function PagingControl({ totalPages, pageNum, setPageNum }) {
   const styles = {
-    container: {
-      marginTop: 8,
-      marginBottom: 8,
-    },
     inlineFlex: {
       display: "flex",
       justifyContent: "center",
@@ -18,7 +14,7 @@ export default function PagingControl({ totalPages, pageNum, setPageNum }) {
     },
   };
   return (
-    <div style={styles.container}>
+    <div>
       <div style={styles.inlineFlex}>
         <BigButton
           title={"<"}

@@ -30,7 +30,6 @@ function DocumentSignaturePage() {
     controls: {
       maxWidth: 800,
       margin: "0 auto",
-      marginTop: 8,
     },
     footer: {
       position: "fixed",
@@ -79,14 +78,10 @@ function DocumentSignaturePage() {
   const submitSignedDocument = async () => {
     const pdfDoc = await PDFDocument.load(pdf);
     const pdfBytes = await pdfDoc.save();
-    console.log(pdfBytes);
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
-    console.log(blob);
-    console.log(URL.createObjectURL(blob));
     const file = new File([blob], "signed_document_pdf", {
       type: "application/pdf",
     });
-    console.log(file);
     const formData = new FormData();
     formData.append("accessCode", accessCode);
     formData.append("file", file);
@@ -129,7 +124,7 @@ function DocumentSignaturePage() {
             </div>
             <div
               ref={documentContainerRef}
-              style={{ height: "calc(100vh - 150px)", overflow: "auto" }}
+              style={{ height: "calc(100vh - 160px)", overflow: "auto" }}
             >
               <div ref={documentRef} style={styles.documentBlock}>
                 {/* {textInputVisible ? (

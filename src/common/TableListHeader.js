@@ -52,6 +52,8 @@ export default function TableListHeader({
           <TableCell
             key={headCell.id}
             align={headCell.alignRight ? "right" : "left"}
+            style={{ fontWeight: 600, fontSize: 16 }}
+
             // sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
