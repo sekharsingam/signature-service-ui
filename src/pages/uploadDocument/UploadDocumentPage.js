@@ -1,14 +1,15 @@
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { Breadcrumbs, TextField, Typography } from "@mui/material";
 import { convertToRaw, EditorState } from "draft-js";
 import draftjsToHtml from "draftjs-to-html";
 import { useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { uploadDocument } from "src/services/ApiService";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import "./UploadDocumentPage.css";
+import { setDocumentInfo } from "src/app/appSlice";
 import OverlayLoader from "src/common/OverlayLoader";
+import "./UploadDocumentPage.css";
 
 export default function UploadDocumentPage() {
   const [name, setName] = useState();
@@ -20,6 +21,8 @@ export default function UploadDocumentPage() {
 
   const [showLoading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -38,26 +41,44 @@ export default function UploadDocumentPage() {
   };
 
   const handleSubmit = (haveToSign) => {
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append(
-      "message",
-      draftjsToHtml(convertToRaw(editorState.getCurrentContent()))
+    // const formData = new FormData();
+    // formData.append("name", name);
+    // formData.append("email", email);
+    // formData.append(
+    //   "message",
+    //   draftjsToHtml(convertToRaw(editorState.getCurrentContent()))
+    // );
+    // formData.append("file", file);
+
+    const message = draftjsToHtml(
+      convertToRaw(editorState.getCurrentContent())
     );
-    formData.append("file", file);
-    setLoading(true);
-    uploadDocument(formData)
-      .then((res) => {
-        setLoading(false);
-        if (haveToSign) {
-          navigate(`/document/signature/${res.data.accessCode}`);
-        }
+
+    dispatch(
+      setDocumentInfo({
+        name,
+        email,
+        message,
+        file,
       })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
+    );
+
+    // setLoading(true);
+    // uploadDocument(formData)
+    //   .then((res) => {
+    //     setLoading(false);
+    //     if (haveToSign) {
+    //       navigate(`/suchi/document/signature/${res.data.accessCode}`);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     setLoading(false);
+    //   });
+
+    if (haveToSign) {
+      navigate(`/suchi/document/signature`);
+    }
   };
 
   return (
@@ -147,7 +168,7 @@ export default function UploadDocumentPage() {
             </div>
           </div>
 
-          <div className="form-property" style={{ marginTop: 135 }}>
+          <div className="form-property" style={{ marginTop: 40 }}>
             <label className="form-label">File</label>
             <div className="form-field">
               <TextField
@@ -164,11 +185,11 @@ export default function UploadDocumentPage() {
       </div>
       <div style={{ textAlign: "right" }}>
         <button className="btn btn-primary" onClick={handleSubmit}>
-          Submit
+          Next
         </button>
-        <button className="btn btn-primary" onClick={() => handleSubmit(true)}>
+        {/* <button className="btn btn-primary" onClick={() => handleSubmit(true)}>
           Sign and Submit
-        </button>
+        </button> */}
       </div>
     </div>
   );

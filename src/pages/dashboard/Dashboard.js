@@ -7,15 +7,16 @@ import {
   FaEllipsisV,
   FaFileDownload,
   FaSyncAlt,
-  FaTimesCircle,
+  FaTimesCircle
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ActionPopover from "src/common/ActionPopover";
 import OverlayLoader from "src/common/OverlayLoader";
 import TableList from "src/common/TableList";
 import {
+  downloadSignedPdfFile,
   getSignedDocumentsList,
-  setStatusToDocumentListItem,
+  setStatusToDocumentListItem
 } from "src/services/ApiService";
 
 const StyledContent = styled("div")(() => ({
@@ -70,6 +71,18 @@ function Dashboard() {
     navigate("/suchi/document/upload");
   };
 
+  const handleDownloadSignedDocument = (rowData) => {
+    setLoading(true);
+    downloadSignedPdfFile(rowData.accessCode).then((res) => {
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `signed_document.pdf`;
+      link.click();
+      setLoading(false);
+    });
+  };
+
   const TABLE_COLUMNS = [
     { id: "name", label: "Name" },
     { id: "email", label: "Email" },
@@ -88,8 +101,20 @@ function Dashboard() {
     {
       id: "file",
       label: "File",
-      dataFormat: (cell) => (
-        <FaFileDownload style={{ marginLeft: 5, cursor: "pointer" }} />
+      dataFormat: (cell, row) => (
+        <>
+          <Typography variant="label">
+            {row.status === "Signed By User"
+              ? "signed_document.pdf"
+              : "document.pdf"}
+          </Typography>
+          {row.status === "Signed By User" && (
+            <FaFileDownload
+              style={{ marginLeft: 5, cursor: "pointer" }}
+              onClick={() => handleDownloadSignedDocument(row)}
+            />
+          )}
+        </>
       ),
     },
     {
@@ -106,9 +131,10 @@ function Dashboard() {
         ) : (
           <Chip
             label={cell}
-            icon={<FaTimesCircle />}
-            color="error"
+            // icon={<FaCheckCircle />}
+            color="info"
             size="small"
+            style={{ padding: "0 10px" }}
           />
         );
       },
@@ -168,18 +194,20 @@ function Dashboard() {
             columns={TABLE_COLUMNS}
             noDataText={"No data"}
           />
-          <ActionPopover open={openPopover} onClose={handlePopoverClose}>
-            <>
-              <MenuItem onClick={() => handleListAction("APPROVED")}>
-                <FaCheckCircle style={{ marginRight: 5, color: "green" }} />
-                Approve
-              </MenuItem>
-              <MenuItem onClick={() => handleListAction("REJECTED")}>
-                <FaTimesCircle style={{ marginRight: 5, color: "red" }} />
-                Reject
-              </MenuItem>
-            </>
-          </ActionPopover>
+          {selectedItemForAction?.status === "Signed By User" && (
+            <ActionPopover open={openPopover} onClose={handlePopoverClose}>
+              <>
+                <MenuItem onClick={() => handleListAction("APPROVED")}>
+                  <FaCheckCircle style={{ marginRight: 5, color: "green" }} />
+                  Approve
+                </MenuItem>
+                <MenuItem onClick={() => handleListAction("REJECTED")}>
+                  <FaTimesCircle style={{ marginRight: 5, color: "red" }} />
+                  Reject
+                </MenuItem>
+              </>
+            </ActionPopover>
+          )}
         </StyledContent>
       </div>
     </div>

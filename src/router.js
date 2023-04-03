@@ -21,6 +21,10 @@ export default function Router() {
         { path: "home", element: <Dashboard /> },
         { path: "/suchi/document/upload", element: <UploadDocumentPage /> },
         {
+          path: "/suchi/document/signature",
+          element: <DocumentSignaturePage />,
+        },
+        {
           path: "/suchi/document/signature/:accessCode",
           element: <DocumentSignaturePage />,
         },

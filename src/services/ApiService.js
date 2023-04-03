@@ -22,6 +22,16 @@ export const uploadSignedPdfFile = async (payload) => {
   return res;
 };
 
+export const downloadSignedPdfFile = async (accessCode) => {
+  const res = await axios.get(
+    `/api/v1/signature/downloadsigned?accessCode=${accessCode}`,
+    {
+      responseType: "blob",
+    }
+  );
+  return res;
+};
+
 export const getSignedDocumentsList = async () => {
   const res = await axios.get("/api/v1/signature/list");
   return res;

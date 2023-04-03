@@ -16,6 +16,8 @@ function Header() {
       top: 0,
       left: 0,
       width: "97%",
+      zIndex: "999",
+      boxShadow: "0 0 8px rgb(0 0 0 / 10%)",
     },
     img: {
       height: 50,

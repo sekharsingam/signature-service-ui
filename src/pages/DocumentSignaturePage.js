@@ -1,12 +1,17 @@
 import { PDFDocument } from "pdf-lib";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import OverlayLoader from "src/common/OverlayLoader";
 import DraggableSignature from "src/components/DraggableSignature";
 import PagingControl from "src/components/PagingControl";
 import SignatureDialog from "src/components/SignatureDialog";
-import { getPdfFile, uploadSignedPdfFile } from "src/services/ApiService";
+import {
+  getPdfFile,
+  uploadDocument,
+  uploadSignedPdfFile,
+} from "src/services/ApiService";
 import { blobToURL } from "src/utils/Utils";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -61,9 +66,22 @@ function DocumentSignaturePage() {
   const navigate = useNavigate();
   const { accessCode } = useParams();
 
+  const { documentInfo } = useSelector((state) => state.app);
+
   useEffect(() => {
+    if (!accessCode) {
+      if (documentInfo) {
+        getFileFromDocumentInfo();
+      }
+      return;
+    }
     downloadPdfFile();
-  }, []);
+  }, [accessCode, documentInfo]);
+
+  const getFileFromDocumentInfo = async () => {
+    const url = await blobToURL(documentInfo.file);
+    setPdf(url);
+  };
 
   const downloadPdfFile = () => {
     setLoading(true);
@@ -79,18 +97,39 @@ function DocumentSignaturePage() {
     const pdfDoc = await PDFDocument.load(pdf);
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
-    const file = new File([blob], "signed_document_pdf", {
+    const file = new File([blob], "signed_document.pdf", {
       type: "application/pdf",
     });
     const formData = new FormData();
-    formData.append("accessCode", accessCode);
     formData.append("file", file);
 
-    setLoading(true);
-    uploadSignedPdfFile(formData).then((res) => {
-      setLoading(false);
-      navigate(`/document/signature/${accessCode}/done`);
-    });
+    // Signed document by Admin
+    if (!accessCode) {
+      const { name, email, message } = documentInfo;
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("message", message);
+      setLoading(true);
+      uploadDocument(formData)
+        .then((res) => {
+          setLoading(false);
+          navigate(
+            `/document/signature/${res.data ?? res.data.accessCode}/done`
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
+    } else {
+      // Signed document by user
+      formData.append("accessCode", accessCode);
+      setLoading(true);
+      uploadSignedPdfFile(formData).then((res) => {
+        setLoading(false);
+        navigate(`/document/signature/${accessCode}/done`);
+      });
+    }
   };
 
   const handleCancelSignatureDialog = () => {
@@ -302,7 +341,7 @@ function DocumentSignaturePage() {
               className="btn btn-primary btn-sm"
               style={{ padding: "0, 20px", display: "block" }}
               inverted={true}
-              title={"Download"}
+              title={"Submit Signed document"}
               onClick={submitSignedDocument}
             >
               Submit Signed document
