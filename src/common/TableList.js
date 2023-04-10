@@ -35,12 +35,12 @@ export default function TableList({
             }))}
           />
           <TableBody>
-            {data.map((row) => {
+            {data.map((row, rowInd) => {
               return (
                 <TableRow hover key={row.id}>
                   {columns.map((col, ind) => {
                     const cellValue = col.dataFormat
-                      ? col.dataFormat(row[col.id], row)
+                      ? col.dataFormat(row[col.id], row, rowInd)
                       : row[col.id];
                     return (
                       <TableCell key={`${row.id}_${ind}`} align="left">

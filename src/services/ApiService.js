@@ -12,7 +12,10 @@ export const generateSignature = async (name) => {
 
 export const getPdfFile = async (accessCode) => {
   const res = await axios.get(
-    `/api/v1/signature/download?accessCode=${accessCode}`
+    `/api/v1/signature/download?accessCode=${accessCode}`,
+    {
+      responseType: "blob",
+    }
   );
   return res;
 };
@@ -39,7 +42,7 @@ export const getSignedDocumentsList = async () => {
 
 export const setStatusToDocumentListItem = async (accessCode, status) => {
   const res = await axios.get(
-    `api/v1/signature/approve?accessCode=${accessCode}&status=${status}`
+    `/api/v1/signature/approve?accessCode=${accessCode}&status=${status}`
   );
   return res;
 };

@@ -7,7 +7,7 @@ import {
   FaEllipsisV,
   FaFileDownload,
   FaSyncAlt,
-  FaTimesCircle
+  FaTimesCircle,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ActionPopover from "src/common/ActionPopover";
@@ -16,7 +16,7 @@ import TableList from "src/common/TableList";
 import {
   downloadSignedPdfFile,
   getSignedDocumentsList,
-  setStatusToDocumentListItem
+  setStatusToDocumentListItem,
 } from "src/services/ApiService";
 
 const StyledContent = styled("div")(() => ({
@@ -83,7 +83,16 @@ function Dashboard() {
     });
   };
 
+  // Statuses
+  // 1. Mail Sent
+  // 2. Signed By User
+  // 3. Approved/Rejected
   const TABLE_COLUMNS = [
+    {
+      id: "sno",
+      label: "S No",
+      dataFormat: (cell, row, rowInd) => <span>{rowInd + 1}</span>,
+    },
     { id: "name", label: "Name" },
     { id: "email", label: "Email" },
     {
@@ -104,11 +113,11 @@ function Dashboard() {
       dataFormat: (cell, row) => (
         <>
           <Typography variant="label">
-            {row.status === "Signed By User"
+            {row.status === "Signed By User" || row.status === "APPROVED"
               ? "signed_document.pdf"
               : "document.pdf"}
           </Typography>
-          {row.status === "Signed By User" && (
+          {(row.status === "Signed By User" || row.status === "APPROVED") && (
             <FaFileDownload
               style={{ marginLeft: 5, cursor: "pointer" }}
               onClick={() => handleDownloadSignedDocument(row)}

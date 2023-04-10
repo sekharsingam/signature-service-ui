@@ -1,4 +1,5 @@
-import { PDFDocument } from "pdf-lib";
+import moment from "moment";
+import { PDFDocument, rgb } from "pdf-lib";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { useSelector } from "react-redux";
@@ -147,7 +148,7 @@ function DocumentSignaturePage() {
       <div style={styles.container}>
         <SignatureDialog
           open={openSignatureDialog}
-          title={"Reason for Reject the Customer"}
+          title={"Signature"}
           onCancel={handleCancelSignatureDialog}
           onConfirm={handleConfirmSignatureDialog}
         />
@@ -265,15 +266,14 @@ function DocumentSignaturePage() {
                       });
 
                       // if (autoDate) {
-                      //   firstPage.drawText(
-                      //     `Signed ${dayjs().format("M/d/YYYY HH:mm:ss ZZ")}`,
-                      //     {
-                      //       x: newX,
-                      //       y: newY - 10,
-                      //       size: 14 * scale,
-                      //       color: rgb(0.074, 0.545, 0.262),
-                      //     }
-                      //   );
+                      firstPage.drawText(
+                        `Signed ${moment().format("DD/MM/YYYY hh:mm:ss A")}`,
+                        {
+                          x: newX,
+                          y: newY - 10,
+                          size: 12 * scale,
+                        }
+                      );
                       // }
 
                       const pdfBytes = await pdfDoc.save();

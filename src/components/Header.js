@@ -36,7 +36,7 @@ function Header() {
         />
       </div>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <Typography variant="h6">Sekhar Singam</Typography>
+        <Typography variant="h6">Admin</Typography>
         <FaPowerOff
           style={{ marginLeft: 15, fontSize: 24, cursor: "pointer" }}
           onClick={() => navigate("/login")}
